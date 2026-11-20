@@ -1,7 +1,7 @@
 package se.yrgo.user_service.exception;
 
-public class RoleNotFound extends RuntimeException {
-    public RoleNotFound(String message) {
+public class RoleNotFoundException extends RuntimeException {
+    public RoleNotFoundException(String message) {
         super(message);
     }
 }
