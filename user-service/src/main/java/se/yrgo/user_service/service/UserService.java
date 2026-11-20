@@ -4,8 +4,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import se.yrgo.user_service.entity.Role;
 import se.yrgo.user_service.entity.User;
-import se.yrgo.user_service.exception.RoleNotFound;
-import se.yrgo.user_service.exception.UserWithIdNotFound;
+import se.yrgo.user_service.exception.RoleNotFoundException;
+import se.yrgo.user_service.exception.UserWithIdNotFoundException;
 import se.yrgo.user_service.repository.RoleRepository;
 import se.yrgo.user_service.repository.UserRepository;
 
@@ -45,7 +45,7 @@ public class UserService {
         }
 
         Role userRole = roleRepository.findByRoleType(Role.RoleType.USER)
-                .orElseThrow(() -> new RoleNotFound("User role not found"));
+                .orElseThrow(() -> new RoleNotFoundException("User role not found"));
 
         user.setRole(userRole);
         user.setPassword(encoder.encode(user.getPassword()));
@@ -54,13 +54,9 @@ public class UserService {
     }
 
     public User updateUser(User user) {
-        Optional<User> userOpt = userRepository.findById(user.getId());
+        User oldUser = userRepository.findById(user.getId())
+                .orElseThrow(() -> new UserWithIdNotFoundException(user.getId()));
 
-        if (userOpt.isEmpty()) {
-            throw new UserWithIdNotFound(user.getId());
-        }
-
-        User oldUser = userOpt.get();
         if (!oldUser.getFirstName().equals(user.getFirstName())) {
             oldUser.setFirstName(user.getFirstName());
         }
