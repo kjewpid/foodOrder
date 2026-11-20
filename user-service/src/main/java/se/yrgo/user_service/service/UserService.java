@@ -1,5 +1,6 @@
 package se.yrgo.user_service.service;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import se.yrgo.user_service.entity.Role;
 import se.yrgo.user_service.entity.User;
@@ -15,10 +16,13 @@ import java.util.Optional;
 public class UserService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
+    private final PasswordEncoder encoder;
 
-    public UserService(UserRepository repository, RoleRepository roleRepository) {
+    public UserService(UserRepository repository, RoleRepository roleRepository,
+                       PasswordEncoder encoder) {
         this.userRepository = repository;
         this.roleRepository = roleRepository;
+        this.encoder = encoder;
     }
 
     public List<User> getAllUsers() {
@@ -44,6 +48,8 @@ public class UserService {
                 .orElseThrow(() -> new RoleNotFound("User role not found"));
 
         user.setRole(userRole);
+        user.setPassword(encoder.encode(user.getPassword()));
+
         return userRepository.save(user);
     }
 
@@ -61,9 +67,12 @@ public class UserService {
         if (!oldUser.getLastName().equals(user.getLastName())) {
             oldUser.setLastName(user.getLastName());
         }
-        if (!oldUser.getEmail().equals(user.getEmail())
-                && userRepository.existsByEmail(user.getEmail())) {
-            throw new IllegalArgumentException("Email already exists!");
+        if (!oldUser.getEmail().equals(user.getEmail())) {
+            if (userRepository.existsByEmail(user.getEmail())) {
+                throw new IllegalArgumentException("Email already exists!");
+            }
+
+            oldUser.setEmail(user.getEmail());
         }
 
         return userRepository.save(oldUser);
