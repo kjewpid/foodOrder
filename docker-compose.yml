@@ -1,0 +1,15 @@
+
+services:
+  user-db:
+    image: mysql:8.4
+    container_name: foodorder-user-db
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: foodorder_users
+    ports:
+      - "3307:3306"
+    volumes:
+      - user-db-data:/var/lib/mysql
+
+volumes:
+  user-db-data:
