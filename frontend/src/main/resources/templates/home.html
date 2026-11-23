@@ -17,6 +17,8 @@
     <p>
         Inloggad som:
         <span sec:authentication="name"></span>
+
+        <a th:href="@{/profile}">Min profil</a>
     </p>
 
     <form th:action="@{/logout}" method="post">

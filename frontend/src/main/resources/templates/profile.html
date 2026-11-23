@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="sv"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Min profil - FoodOrder</title>
+</head>
+<body>
+
+<h1>Min profil</h1>
+
+
+
+<a th:href="@{/home}">Tillbaka till startsidan</a>
+
+<form th:action="@{/logout}" method="post">
+    <button type="submit">Logga ut</button>
+</form>
+</body>
+</html>

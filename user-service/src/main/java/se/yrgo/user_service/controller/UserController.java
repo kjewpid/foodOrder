@@ -99,12 +99,6 @@ public class UserController {
         return ResponseEntity.noContent().build();
     }
 
-
-    @GetMapping("/test")
-    public String adminTest() {
-        return "You are an admin!";
-    }
-
     @PostMapping("/authenticate")
     public ResponseEntity<?> authenticate(@RequestBody LoginDto login) {
 

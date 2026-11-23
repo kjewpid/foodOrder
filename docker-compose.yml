@@ -6,10 +6,41 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: rootpassword
       MYSQL_DATABASE: foodorder_users
-    ports:
-      - "3307:3306"
     volumes:
       - user-db-data:/var/lib/mysql
+
+  user-service:
+    build:
+      context: ./user-service
+    container_name: foodorder-user-service
+    depends_on:
+      - user-db
+
+  eureka-server:
+    build:
+      context: ./discovery-server
+    container_name: foodorder-eureka-server
+    ports:
+      - "8010:8010"
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: foodorder-frontend
+    depends_on:
+      - eureka-server
+      - user-service
+
+  api-gateway:
+    build:
+      context: ./api-gateway
+    container_name: foodorder-api-gateway
+    depends_on:
+      - eureka-server
+      - frontend
+      - user-service
+    ports:
+      - "80:80"
 
 volumes:
   user-db-data:
