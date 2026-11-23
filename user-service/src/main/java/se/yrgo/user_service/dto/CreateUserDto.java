@@ -14,6 +14,13 @@ public class CreateUserDto {
         this.password = password;
     }
 
+    public CreateUserDto() {
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
     public String getFirstName() {
         return firstName;
     }

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="sv"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>FoodOrder - Hem</title>
+</head>
+<body>
+
+<h1>Välkommen till FoodOrder!</h1>
+
+<div sec:authorize="isAuthenticated()">
+
+    <h2>Du är inloggad!</h2>
+
+    <p>
+        Inloggad som:
+        <span sec:authentication="name"></span>
+    </p>
+
+    <form th:action="@{/logout}" method="post">
+        <button type="submit">Logga ut</button>
+    </form>
+
+</div>
+
+<div sec:authorize="isAnonymous()">
+
+    <h2>Du är utloggad.</h2>
+
+    <a th:href="@{/login}">Logga in</a>
+
+    <br><br>
+
+    <a th:href="@{/register}">Registrera konto</a>
+
+</div>
+
+</body>
+</html>

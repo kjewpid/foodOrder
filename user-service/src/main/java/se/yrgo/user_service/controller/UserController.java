@@ -2,8 +2,10 @@ package se.yrgo.user_service.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import se.yrgo.user_service.dto.CreateUserDto;
+import se.yrgo.user_service.dto.LoginDto;
 import se.yrgo.user_service.dto.UserDto;
 import se.yrgo.user_service.entity.User;
 import se.yrgo.user_service.service.UserService;
@@ -14,9 +16,11 @@ import java.util.List;
 @RequestMapping("/api/users")
 public class UserController {
     private final UserService service;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserController(UserService service) {
+    public UserController(UserService service, PasswordEncoder encoder) {
         this.service = service;
+        this.passwordEncoder = encoder;
     }
 
     @GetMapping
@@ -93,5 +97,31 @@ public class UserController {
     public ResponseEntity<String> deleteUser(@PathVariable Long id) {
         service.deleteUser(id);
         return ResponseEntity.noContent().build();
+    }
+
+
+    @GetMapping("/test")
+    public String adminTest() {
+        return "You are an admin!";
+    }
+
+    @PostMapping("/authenticate")
+    public ResponseEntity<?> authenticate(@RequestBody LoginDto login) {
+
+        User user = service.findByEmail(login.getEmail())
+                .orElse(null);
+
+        if (user == null ||
+                !passwordEncoder.matches(login.getPassword(), user.getPassword())) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        return ResponseEntity.ok(
+                new UserDto(
+                        user.getFirstName(),
+                        user.getLastName(),
+                        user.getEmail()
+                )
+        );
     }
 }

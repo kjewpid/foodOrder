@@ -3,9 +3,11 @@ package se.yrgo.user_service.security;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Service;
 import se.yrgo.user_service.entity.User;
 import se.yrgo.user_service.repository.UserRepository;
 
+@Service
 public class CustomUserDetailsService implements UserDetailsService {
 
     private final UserRepository userRepository;
