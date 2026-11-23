@@ -9,6 +9,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
+import java.security.Principal;
 import java.util.List;
 
 @Component
@@ -38,8 +39,10 @@ public class RemoteAuthenticationProvider implements AuthenticationProvider {
                 throw new BadCredentialsException("Felaktiga inloggningsuppgifter");
             }
 
+            System.out.println("Inloggad användare, ID: " + user.id());
+
             return new UsernamePasswordAuthenticationToken(
-                    user.email(),
+                    user,
                     null,
                     List.of(new SimpleGrantedAuthority("ROLE_USER"))
             );
@@ -59,11 +62,18 @@ public class RemoteAuthenticationProvider implements AuthenticationProvider {
                 .isAssignableFrom(authentication);
     }
 
-    public record LoginRequest(String email, String password) {}
+    public record LoginRequest(String email, String password) {
+    }
 
     public record UserResponse(
+            Long id,
             String firstName,
             String lastName,
             String email
-    ) {}
+    ) implements Principal {
+        @Override
+        public String getName() {
+            return email;
+        }
+    }
 }

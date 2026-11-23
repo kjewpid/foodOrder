@@ -6,12 +6,43 @@
     <title>Min profil - FoodOrder</title>
 </head>
 <body>
+<div>
+    <h1>Min profil</h1>
 
-<h1>Min profil</h1>
+    <p>Förnamn: <span th:text="${user.firstName}"></span></p>
+    <p>Efternamn: <span th:text="${user.lastName}"></span></p>
+    <p>E-post: <span th:text="${user.email}"></span></p>
 
+    <h2>Mina adresser</h2>
 
+    <ul>
+        <li th:each="address : ${addresses}">
+            <strong th:text="${address.label}"></strong>
+            <span th:text="${address.streetName}"></span>,
+            <span th:text="${address.zipCode}"></span>
+            <span th:text="${address.city}"></span>
+        </li>
+    </ul>
 
-<a th:href="@{/home}">Tillbaka till startsidan</a>
+    <p th:if="${#lists.isEmpty(addresses)}">
+        Du har inga sparade adresser.
+    </p>
+
+    <h3>Lägg till address</h3>
+
+    <form action="/profile/addresses" method="post">
+        <input name="label" placeholder="T.ex. Hem, Jobb" required>
+        <input name="streetName" placeholder="Gatuadress" required>
+        <input name="zipCode" placeholder="Postnummer" required>
+        <input name="city" placeholder="Stad" required>
+        <input name="country" placeholder="Land" required>
+        <button type="submit">Spara adress</button>
+    </form>
+</div>
+
+<div>
+    <a th:href="@{/home}">Tillbaka till startsidan</a>
+</div>
 
 <form th:action="@{/logout}" method="post">
     <button type="submit">Logga ut</button>

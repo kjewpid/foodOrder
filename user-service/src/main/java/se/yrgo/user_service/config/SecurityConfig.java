@@ -23,8 +23,12 @@ public class SecurityConfig {
                                 "/api/users/authenticate"
                         ).permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/api/**").authenticated()
-                        .anyRequest().permitAll()
+                        .requestMatchers(
+                                HttpMethod.GET,
+                                "/api/users/*",
+                                "/api/users/*/addresses"
+                        ).permitAll()
+                        .anyRequest().denyAll()
                 );
 
         return http.build();

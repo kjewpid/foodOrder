@@ -1,5 +1,7 @@
+
 package se.yrgo.frontend.controller;
 
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -22,7 +24,10 @@ public class RegisterController {
     }
 
     @PostMapping("/register")
-    public String createAccount(@ModelAttribute RegisterForm form) {
+    public void createAccount(
+            @ModelAttribute RegisterForm form,
+            HttpServletResponse response) {
+
         try {
             restClient.post()
                     .uri("http://user-service/api/users")
@@ -30,11 +35,14 @@ public class RegisterController {
                     .retrieve()
                     .toBodilessEntity();
 
-            return "redirect:/login?registered";
+            response.setStatus(302);
+            response.setHeader("Location", "/login?registered");
 
         } catch (Exception exception) {
             exception.printStackTrace();
-            return "redirect:/register?error";
+
+            response.setStatus(302);
+            response.setHeader("Location", "/register?error");
         }
     }
 }

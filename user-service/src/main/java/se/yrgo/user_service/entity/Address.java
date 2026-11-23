@@ -8,7 +8,7 @@ public class Address {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
+    private String label;
     private String streetName;
     private String city;
     private String zipCode;
@@ -19,9 +19,11 @@ public class Address {
     @JsonIgnore
     private User user;
 
-    public Address(){}
+    public Address() {
+    }
 
-    public Address(String streetName, String city, String zipCode, String country, User user) {
+    public Address(String label, String streetName, String city, String zipCode, String country, User user) {
+        this.label = label;
         this.streetName = streetName;
         this.city = city;
         this.zipCode = zipCode;
@@ -71,5 +73,13 @@ public class Address {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public String getLabel() {
+        return label;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
     }
 }

@@ -33,10 +33,10 @@ public class AddressService {
                 .orElseThrow(() -> new UserWithIdNotFoundException(userId));
 
         Address address = new Address();
-        address.setStreetName(dto.getStreetName());
-        address.setCity(dto.getCity());
-        address.setZipCode(dto.getZipCode());
-        address.setCountry(dto.getCountry());
+        address.setStreetName(dto.streetName());
+        address.setCity(dto.city());
+        address.setZipCode(dto.zipCode());
+        address.setCountry(dto.country());
         address.setUser(user);
 
         Address savedAddress = addressRepository.save(address);
@@ -50,10 +50,10 @@ public class AddressService {
                 .orElseThrow(() ->
                         new IllegalArgumentException("Address not found: " + addressId));
 
-        oldAddress.setStreetName(dto.getStreetName());
-        oldAddress.setCity(dto.getCity());
-        oldAddress.setZipCode(dto.getZipCode());
-        oldAddress.setCountry(dto.getCountry());
+        oldAddress.setStreetName(dto.streetName());
+        oldAddress.setCity(dto.city());
+        oldAddress.setZipCode(dto.zipCode());
+        oldAddress.setCountry(dto.country());
 
         Address updatedAddress = addressRepository.save(oldAddress);
 
@@ -65,13 +65,13 @@ public class AddressService {
     }
 
     private AddressDto convertToDto(Address address) {
-        AddressDto dto = new AddressDto();
-        dto.setId(address.getId());
-        dto.setStreetName(address.getStreetName());
-        dto.setCity(address.getCity());
-        dto.setZipCode(address.getZipCode());
-        dto.setCountry(address.getCountry());
-
-        return dto;
+        return new AddressDto(
+                address.getId(),
+                address.getLabel(),
+                address.getStreetName(),
+                address.getCity(),
+                address.getZipCode(),
+                address.getCountry()
+        );
     }
 }

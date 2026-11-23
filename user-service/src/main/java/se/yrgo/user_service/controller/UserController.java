@@ -1,9 +1,12 @@
+
 package se.yrgo.user_service.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+
+import se.yrgo.user_service.dto.AuthResponseDto;
 import se.yrgo.user_service.dto.CreateUserDto;
 import se.yrgo.user_service.dto.LoginDto;
 import se.yrgo.user_service.dto.UserDto;
@@ -15,6 +18,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
+
     private final UserService service;
     private final PasswordEncoder passwordEncoder;
 
@@ -54,10 +58,10 @@ public class UserController {
     ) {
         User user = new User();
 
-        user.setFirstName(createUserDto.getFirstName());
-        user.setLastName(createUserDto.getLastName());
-        user.setEmail(createUserDto.getEmail());
-        user.setPassword(createUserDto.getPassword());
+        user.setFirstName(createUserDto.firstName());
+        user.setLastName(createUserDto.lastName());
+        user.setEmail(createUserDto.email());
+        user.setPassword(createUserDto.password());
 
         User createdUser = service.createUser(user);
 
@@ -76,10 +80,11 @@ public class UserController {
             @RequestBody UserDto userDto
     ) {
         User user = new User();
+
         user.setId(id);
-        user.setFirstName(userDto.getFirstName());
-        user.setLastName(userDto.getLastName());
-        user.setEmail(userDto.getEmail());
+        user.setFirstName(userDto.firstName());
+        user.setLastName(userDto.lastName());
+        user.setEmail(userDto.email());
 
         User updatedUser = service.updateUser(user);
 
@@ -90,7 +95,6 @@ public class UserController {
         );
 
         return ResponseEntity.ok(response);
-
     }
 
     @DeleteMapping("/{id}")
@@ -100,18 +104,20 @@ public class UserController {
     }
 
     @PostMapping("/authenticate")
-    public ResponseEntity<?> authenticate(@RequestBody LoginDto login) {
-
-        User user = service.findByEmail(login.getEmail())
+    public ResponseEntity<AuthResponseDto> authenticate(
+            @RequestBody LoginDto login
+    ) {
+        User user = service.findByEmail(login.email())
                 .orElse(null);
 
         if (user == null ||
-                !passwordEncoder.matches(login.getPassword(), user.getPassword())) {
+                !passwordEncoder.matches(login.password(), user.getPassword())) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
         return ResponseEntity.ok(
-                new UserDto(
+                new AuthResponseDto(
+                        user.getId(),
                         user.getFirstName(),
                         user.getLastName(),
                         user.getEmail()

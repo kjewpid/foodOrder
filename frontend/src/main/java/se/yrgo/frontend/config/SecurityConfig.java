@@ -38,6 +38,10 @@ public class SecurityConfig {
                             response.setStatus(302);
                             response.setHeader("Location", "/home");
                         })
+                        .failureHandler((request, response, exception) -> {
+                            response.setStatus(302);
+                            response.setHeader("Location", "/login?error");
+                        })
                         .permitAll()
                 )
                 .logout(logout -> logout
