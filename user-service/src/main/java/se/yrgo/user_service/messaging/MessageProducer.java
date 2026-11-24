@@ -1,0 +1,18 @@
+package se.yrgo.user_service.messaging;
+
+import org.springframework.jms.core.JmsTemplate;
+import org.springframework.stereotype.Component;
+
+@Component
+public class MessageProducer {
+
+    private final JmsTemplate jmsTemplate;
+
+    public MessageProducer(JmsTemplate jmsTemplate) {
+        this.jmsTemplate = jmsTemplate;
+    }
+
+    public void sendMessage(String message) {
+        jmsTemplate.convertAndSend("user.registered", message);
+    }
+}
