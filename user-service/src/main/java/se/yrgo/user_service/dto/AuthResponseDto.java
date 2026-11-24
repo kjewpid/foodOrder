@@ -4,5 +4,7 @@ public record AuthResponseDto(
         Long id,
         String firstName,
         String lastName,
-        String email
-) {}
+        String email,
+        String role
+) {
+}

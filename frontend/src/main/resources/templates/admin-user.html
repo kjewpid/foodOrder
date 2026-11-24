@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="sv" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <title>Användarprofil - FoodOrder</title>
+</head>
+<body>
+
+<h1 th:text="${user.firstName + ' ' + user.lastName}"></h1>
+
+<h2>Personuppgifter</h2>
+
+<p>
+    Användar-ID:
+    <span th:text="${user.id}"></span>
+</p>
+
+<p>
+    Förnamn:
+    <span th:text="${user.firstName}"></span>
+</p>
+
+<p>
+    Efternamn:
+    <span th:text="${user.lastName}"></span>
+</p>
+
+<p>
+    E-post:
+    <span th:text="${user.email}"></span>
+</p>
+
+<p>
+    Roll:
+    <span th:text="${user.role}"></span>
+</p>
+
+<details>
+    <summary>Redigera användare</summary>
+
+    <form th:action="@{/admin/users/{id}/edit(id=${user.id})}"
+          method="post">
+
+        <label>Förnamn</label>
+        <input type="text"
+               name="firstName"
+               th:value="${user.firstName}"
+               required>
+
+        <label>Efternamn</label>
+        <input type="text"
+               name="lastName"
+               th:value="${user.lastName}"
+               required>
+
+        <label>E-post</label>
+        <input type="email"
+               name="email"
+               th:value="${user.email}"
+               required>
+
+        <button type="submit">Spara ändringar</button>
+
+    </form>
+</details>
+
+<section th:if="${user.role == 'USER'}">
+
+    <h2>Sparade adresser</h2>
+
+    <div th:each="address : ${addresses}">
+
+        <h3 th:text="${address.label}"></h3>
+
+        <div th:text="${address.streetName}"></div>
+        <div th:text="${address.zipCode}"></div>
+        <div th:text="${address.city}"></div>
+        <div th:text="${address.country}"></div>
+
+    </div>
+
+    <p th:if="${#lists.isEmpty(addresses)}">
+        Användaren har inga sparade adresser.
+    </p>
+
+</section>
+
+<form th:if="${user.id != adminId}"
+      th:action="@{/admin/users/{id}/delete(id=${user.id})}"
+      method="post"
+      onsubmit="return confirm('Är du säker på att du vill radera användaren?');">
+
+    <button type="submit" class="delete-button">
+        Radera användare
+    </button>
+
+</form>
+
+<p>
+    <a th:href="@{/admin/users}">Tillbaka till användarlistan</a>
+</p>
+
+</body>
+</html>

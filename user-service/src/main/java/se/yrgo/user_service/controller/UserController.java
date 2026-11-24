@@ -29,12 +29,9 @@ public class UserController {
 
     @GetMapping
     public ResponseEntity<List<UserDto>> getAllUsers() {
+
         List<UserDto> users = service.getAllUsers().stream()
-                .map(user -> new UserDto(
-                        user.getFirstName(),
-                        user.getLastName(),
-                        user.getEmail()
-                ))
+                .map(this::toDto)
                 .toList();
 
         return ResponseEntity.ok(users);
@@ -42,20 +39,17 @@ public class UserController {
 
     @GetMapping("/{id}")
     public ResponseEntity<UserDto> getUserById(@PathVariable Long id) {
+
         return service.findById(id)
-                .map(user -> new UserDto(
-                        user.getFirstName(),
-                        user.getLastName(),
-                        user.getEmail()
-                ))
+                .map(this::toDto)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
     public ResponseEntity<UserDto> createUser(
-            @RequestBody CreateUserDto createUserDto
-    ) {
+            @RequestBody CreateUserDto createUserDto) {
+
         User user = new User();
 
         user.setFirstName(createUserDto.firstName());
@@ -65,20 +59,15 @@ public class UserController {
 
         User createdUser = service.createUser(user);
 
-        UserDto response = new UserDto(
-                createdUser.getFirstName(),
-                createdUser.getLastName(),
-                createdUser.getEmail()
-        );
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(toDto(createdUser));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<UserDto> updateUser(
             @PathVariable Long id,
-            @RequestBody UserDto userDto
-    ) {
+            @RequestBody UserDto userDto) {
+
         User user = new User();
 
         user.setId(id);
@@ -88,31 +77,30 @@ public class UserController {
 
         User updatedUser = service.updateUser(user);
 
-        UserDto response = new UserDto(
-                updatedUser.getFirstName(),
-                updatedUser.getLastName(),
-                updatedUser.getEmail()
-        );
-
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(toDto(updatedUser));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteUser(@PathVariable Long id) {
+
         service.deleteUser(id);
+
         return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/authenticate")
     public ResponseEntity<AuthResponseDto> authenticate(
-            @RequestBody LoginDto login
-    ) {
+            @RequestBody LoginDto login) {
+
         User user = service.findByEmail(login.email())
                 .orElse(null);
 
         if (user == null ||
-                !passwordEncoder.matches(login.password(), user.getPassword())) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+                !passwordEncoder.matches(
+                        login.password(), user.getPassword())) {
+
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .build();
         }
 
         return ResponseEntity.ok(
@@ -120,8 +108,19 @@ public class UserController {
                         user.getId(),
                         user.getFirstName(),
                         user.getLastName(),
-                        user.getEmail()
+                        user.getEmail(),
+                        user.getRole().getRoleType().name()
                 )
+        );
+    }
+
+    private UserDto toDto(User user) {
+        return new UserDto(
+                user.getId(),
+                user.getFirstName(),
+                user.getLastName(),
+                user.getEmail(),
+                user.getRole().getRoleType().name()
         );
     }
 }

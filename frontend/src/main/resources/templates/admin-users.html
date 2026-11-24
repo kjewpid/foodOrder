@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="sv" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <title>Användare - FoodOrder</title>
+</head>
+<body>
+
+<h1>Registrerade användare</h1>
+
+<table>
+    <thead>
+    <tr>
+        <th>Namn</th>
+        <th>E-post</th>
+        <th>Profil</th>
+        <th>Radera</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    <tr th:each="user : ${users}">
+
+        <td th:text="${user.firstName + ' ' + user.lastName}"></td>
+
+        <td th:text="${user.email}"></td>
+
+        <td>
+            <a th:href="@{/admin/users/{id}(id=${user.id})}">
+                Visa profil
+            </a>
+        </td>
+
+        <td>
+            <form th:if="${user.id != adminId}"
+                  th:action="@{/admin/users/{id}/delete(id=${user.id})}"
+                  method="post"
+                  onsubmit="return confirm('Är du säker på att du vill radera användaren?');">
+
+                <button type="submit"
+                        class="delete-cross"
+                        title="Radera användare"
+                        aria-label="Radera användare">
+                    &times;
+                </button>
+
+            </form>
+        </td>
+
+    </tr>
+    </tbody>
+</table>
+
+<p th:if="${#lists.isEmpty(users)}">
+    Det finns inga registrerade användare.
+</p>
+
+<p>
+    <a th:href="@{/profile}">Tillbaka till min profil</a>
+</p>
+
+</body>
+</html>

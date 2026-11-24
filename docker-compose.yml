@@ -42,5 +42,18 @@ services:
     ports:
       - "80:80"
 
+  activemq:
+    image: apache/activemq-artemis:latest
+    container_name: activemq
+    ports:
+      - "61616:61616"
+      - "8161:8161"
+    environment:
+      ARTEMIS_USER: admin
+      ARTEMIS_PASSWORD: admin
+    volumes:
+      - activemq-data:/var/lib/artemis-instance
+
 volumes:
   user-db-data:
+  activemq-data:

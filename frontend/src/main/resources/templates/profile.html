@@ -2,125 +2,169 @@
 <html lang="sv" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" th:href="@{/css/style.css}">
     <title>Min profil - FoodOrder</title>
 </head>
 <body>
 
-<div>
-    <h1>Min profil</h1>
+<h1>Min profil</h1>
+
+<p th:if="${isAdmin}">Administratör</p>
+
+<h2>Personuppgifter</h2>
+
+<p>
+    Förnamn:
+    <span th:text="${user.firstName}"></span>
+</p>
+
+<p>
+    Efternamn:
+    <span th:text="${user.lastName}"></span>
+</p>
+
+<p>
+    E-post:
+    <span th:text="${user.email}"></span>
+</p>
+
+<details>
+    <summary>Redigera personuppgifter</summary>
+
+    <form th:action="@{/profile/edit}" method="post">
+
+        <label>Förnamn</label>
+        <input type="text"
+               name="firstName"
+               th:value="${user.firstName}"
+               required>
+
+        <label>Efternamn</label>
+        <input type="text"
+               name="lastName"
+               th:value="${user.lastName}"
+               required>
+
+        <label>E-post</label>
+        <input type="email"
+               name="email"
+               th:value="${user.email}"
+               required>
+
+        <button type="submit">Spara ändringar</button>
+    </form>
+</details>
+
+<!-- ADMIN -->
+
+<section th:if="${isAdmin}">
+
+    <h2>Administration</h2>
 
     <p>
-        Förnamn:
-        <span th:text="${user.firstName}"></span>
+        <a th:href="@{/admin/users}">Hantera användare</a>
     </p>
 
-    <p>
-        Efternamn:
-        <span th:text="${user.lastName}"></span>
-    </p>
+</section>
 
-    <p>
-        E-post:
-        <span th:text="${user.email}"></span>
-    </p>
+<!-- USER -->
 
+<section th:unless="${isAdmin}">
 
-    <h2>Mina adresser</h2>
+    <h2>Mina addresser</h2>
 
     <div th:each="address : ${addresses}">
+
         <h3 th:text="${address.label}">Hem</h3>
 
-        <div th:text="${address.streetName}">Gatuadress</div>
-        <div th:text="${address.zipCode}">Postnummer</div>
-        <div th:text="${address.city}">Stad</div>
-        <div th:text="${address.country}">Land</div>
+        <div th:text="${address.streetName}"></div>
+        <div th:text="${address.zipCode}"></div>
+        <div th:text="${address.city}"></div>
+        <div th:text="${address.country}"></div>
 
         <details>
-            <summary>Redigera / ✕ Stäng</summary>
+            <summary>Redigera address</summary>
 
             <form th:action="@{/profile/addresses/{id}/edit(id=${address.id})}"
                   method="post">
-                <p>
-                    <input name="label"
-                           th:value="${address.label}"
-                           required>
-                </p>
-                <p>
-                    <input name="streetName"
-                           th:value="${address.streetName}"
-                           required>
-                </p>
-                <p>
-                    <input name="zipCode"
-                           th:value="${address.zipCode}"
-                           required>
-                </p>
-                <p>
-                    <input name="city"
-                           th:value="${address.city}"
-                           required>
-                </p>
-                <p>
-                    <input name="country"
-                           th:value="${address.country}"
-                           required>
-                </p>
+
+                <input name="label"
+                       th:value="${address.label}"
+                       required>
+
+                <input name="streetName"
+                       th:value="${address.streetName}"
+                       required>
+
+                <input name="zipCode"
+                       th:value="${address.zipCode}"
+                       required>
+
+                <input name="city"
+                       th:value="${address.city}"
+                       required>
+
+                <input name="country"
+                       th:value="${address.country}"
+                       required>
+
                 <button type="submit">Spara ändringar</button>
+
             </form>
         </details>
+        <form th:action="@{/profile/addresses/{id}/delete(id=${address.id})}"
+              method="post">
+
+            <button type="submit" class="delete-button">
+                Radera adress
+            </button>
+
+        </form>
     </div>
 
     <p th:if="${#lists.isEmpty(addresses)}">
-        Du har inga sparade adresser.
+        Du har inga sparade addresser.
     </p>
 
     <details>
-        <summary>Lägg till adress</summary>
+        <summary>Lägg till address</summary>
 
         <h3>Ny adress</h3>
 
         <form th:action="@{/profile/addresses}" method="post">
 
-            <p>
-                <input type="text"
-                       name="label"
-                       placeholder="Hem eller Jobb"
-                       required>
-            </p>
+            <input type="text"
+                   name="label"
+                   placeholder="Hem eller Jobb"
+                   required>
 
-            <p>
-                <input type="text"
-                       name="streetName"
-                       placeholder="Gatuadress"
-                       required>
-            </p>
+            <input type="text"
+                   name="streetName"
+                   placeholder="Gatuadress"
+                   required>
 
-            <p>
-                <input type="text"
-                       name="zipCode"
-                       placeholder="Postnummer"
-                       required>
-            </p>
+            <input type="text"
+                   name="zipCode"
+                   placeholder="Postnummer"
+                   required>
 
-            <p>
-                <input type="text"
-                       name="city"
-                       placeholder="Stad"
-                       required>
-            </p>
+            <input type="text"
+                   name="city"
+                   placeholder="Stad"
+                   required>
 
-            <p>
-                <input type="text"
-                       name="country"
-                       placeholder="Land"
-                       required>
-            </p>
+            <input type="text"
+                   name="country"
+                   placeholder="Land"
+                   required>
 
             <button type="submit">Spara adress</button>
+
         </form>
     </details>
-</div>
+
+</section>
 
 <p>
     <a th:href="@{/home}">Tillbaka till startsidan</a>

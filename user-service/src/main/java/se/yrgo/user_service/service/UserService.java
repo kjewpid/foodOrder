@@ -6,6 +6,7 @@ import se.yrgo.user_service.entity.Role;
 import se.yrgo.user_service.entity.User;
 import se.yrgo.user_service.exception.RoleNotFoundException;
 import se.yrgo.user_service.exception.UserWithIdNotFoundException;
+import se.yrgo.user_service.messaging.MessageProducer;
 import se.yrgo.user_service.repository.RoleRepository;
 import se.yrgo.user_service.repository.UserRepository;
 
@@ -17,12 +18,16 @@ public class UserService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder encoder;
+    private final MessageProducer messageProducer;
 
-    public UserService(UserRepository repository, RoleRepository roleRepository,
-                       PasswordEncoder encoder) {
+    public UserService(UserRepository repository,
+                       RoleRepository roleRepository,
+                       PasswordEncoder encoder,
+                       MessageProducer messageProducer) {
         this.userRepository = repository;
         this.roleRepository = roleRepository;
         this.encoder = encoder;
+        this.messageProducer = messageProducer;
     }
 
     public List<User> getAllUsers() {
@@ -50,7 +55,11 @@ public class UserService {
         user.setRole(userRole);
         user.setPassword(encoder.encode(user.getPassword()));
 
-        return userRepository.save(user);
+        User savedUser = userRepository.save(user);
+
+        messageProducer.sendMessage("User registered: " + savedUser.getId());
+
+        return savedUser;
     }
 
     public User updateUser(User user) {

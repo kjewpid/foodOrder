@@ -1,3 +1,4 @@
+
 package se.yrgo.frontend.security;
 
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
@@ -36,15 +37,20 @@ public class RemoteAuthenticationProvider implements AuthenticationProvider {
                     .body(UserResponse.class);
 
             if (user == null) {
-                throw new BadCredentialsException("Felaktiga inloggningsuppgifter");
+                throw new BadCredentialsException(
+                        "Felaktiga inloggningsuppgifter"
+                );
             }
 
             System.out.println("Inloggad användare, ID: " + user.id());
+            System.out.println("Roll: " + user.role());
 
             return new UsernamePasswordAuthenticationToken(
                     user,
                     null,
-                    List.of(new SimpleGrantedAuthority("ROLE_USER"))
+                    List.of(new SimpleGrantedAuthority(
+                            "ROLE_" + user.role()
+                    ))
             );
 
         } catch (BadCredentialsException e) {
@@ -69,8 +75,10 @@ public class RemoteAuthenticationProvider implements AuthenticationProvider {
             Long id,
             String firstName,
             String lastName,
-            String email
+            String email,
+            String role
     ) implements Principal {
+
         @Override
         public String getName() {
             return email;
