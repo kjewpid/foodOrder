@@ -1,82 +1,206 @@
-
 html {
     font-size: 62.5%;
+}
+
+* {
+    box-sizing: border-box;
 }
 
 body {
     font-family: Arial, sans-serif;
     font-size: 1.6rem;
-    background-color: #fff5f2;
-    color: #442b32;
-    max-width: 70rem;
-    margin: 4rem auto;
-    padding: 2rem;
+    line-height: 1.5;
+    background-color: #fff5f0;
+    color: #333;
+    max-width: 100rem;
+    margin: 0 auto;
+    padding: 3rem;
 }
 
-h1, h2, h3 {
-    color: #d94b54;
-}
+/* Rubriker */
 
 h1 {
-    font-size: 3rem;
-    margin-bottom: 3rem;
+    font-size: 3.2rem;
+    color: #b83e35;
+    margin-bottom: 2rem;
 }
 
 h2 {
     font-size: 2.4rem;
-    margin-top: 3rem;
+    color: #b83e35;
 }
 
 h3 {
-    font-size: 2rem;
+    font-size: 1.8rem;
+    color: #b83e35;
 }
 
-button {
-    background-color: #f36b4f;
-    color: white;
-    border: none;
-    padding: 1rem 1.6rem;
-    border-radius: 0.5rem;
-    cursor: pointer;
-    margin-top: 1rem;
-    font-size: 1.6rem;
+p {
+    margin: 1rem 0;
 }
 
-button:hover {
-    background-color: #d94b54;
+/* Länkar */
+
+a {
+    color: #c94b40;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* Sektioner */
+
+section {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    background-color: white;
+    padding: 2rem;
+    margin: 2rem 0;
+    border-radius: 1rem;
+}
+
+/* Formulär */
+
+form {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+    margin: 1rem 0;
+}
+
+form br {
+    display: none;
+}
+
+label {
+    font-weight: bold;
 }
 
 input {
-    display: block;
     width: 100%;
-    box-sizing: border-box;
+    max-width: 35rem;
     padding: 1rem;
-    margin: 0.8rem 0;
-    border: 0.1rem solid #e8b4b8;
-    border-radius: 0.5rem;
     font-size: 1.6rem;
+    border: 1px solid #ddd;
+    border-radius: 0.5rem;
 }
 
+input:focus {
+    outline: 2px solid #f4a28a;
+}
+
+/* Knappar */
+
+button {
+    background-color: #e76f51;
+    color: white;
+    border: none;
+    border-radius: 0.5rem;
+    padding: 1rem 1.8rem;
+    font-size: 1.6rem;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #d45b40;
+}
+
+/* Redigeringsformulär */
+
 details {
-    background-color: #fff;
-    padding: 1.5rem;
+    background-color: white;
+    border: 1px solid #efd5ce;
     border-radius: 0.8rem;
-    margin-top: 1.5rem;
-    border: 0.1rem solid #f3c5c5;
+    padding: 1.5rem;
+    margin: 1rem 0;
 }
 
 summary {
     cursor: pointer;
     font-weight: bold;
-    color: #d94b54;
+    color: #b83e35;
 }
 
-a {
-    color: #e85d75;
-    text-decoration: none;
+/* Adresser */
+
+.address-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
 }
 
-a:hover {
-    color: #d94b54;
-    text-decoration: underline;
+.address-card {
+    flex: 1 1 25rem;
+    max-width: 35rem;
+    background-color: #fff5f0;
+    padding: 2rem;
+    border: 1px solid #efd5ce;
+    border-radius: 0.8rem;
+}
+
+.address-card h3 {
+    margin-top: 0;
+}
+
+/* Användarlista */
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: white;
+    margin: 2rem 0;
+}
+
+th,
+td {
+    padding: 1.2rem;
+    text-align: left;
+    border-bottom: 1px solid #efd5ce;
+}
+
+th {
+    background-color: #ffdcd2;
+    color: #b83e35;
+}
+
+tbody tr:hover {
+    background-color: #fff0eb;
+}
+
+td form {
+    margin: 0;
+    align-items: center;
+}
+
+td:last-child,
+th:last-child {
+    text-align: center;
+}
+
+/* Raderingsknappar */
+
+.delete-button {
+    background-color: #c62828;
+}
+
+.delete-button:hover {
+    background-color: #a31515;
+}
+
+.delete-cross {
+    background-color: transparent;
+    color: #c62828;
+    font-size: 2.4rem;
+    font-weight: bold;
+    padding: 0.5rem 1rem;
+}
+
+.delete-cross:hover {
+    background-color: #ffe0e0;
+    color: #a31515;
 }
