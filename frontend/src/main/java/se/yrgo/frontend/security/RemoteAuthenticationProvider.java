@@ -1,14 +1,13 @@
 
 package se.yrgo.frontend.security;
 
-import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestClient;
+import se.yrgo.frontend.client.UserClient;
 
 import java.security.Principal;
 import java.util.List;
@@ -16,11 +15,10 @@ import java.util.List;
 @Component
 public class RemoteAuthenticationProvider implements AuthenticationProvider {
 
-    private final RestClient restClient;
+    private final UserClient userClient;
 
-    public RemoteAuthenticationProvider(
-            @LoadBalanced RestClient.Builder restClientBuilder) {
-        this.restClient = restClientBuilder.build();
+    public RemoteAuthenticationProvider(UserClient userClient) {
+        this.userClient = userClient;
     }
 
     @Override
@@ -30,11 +28,7 @@ public class RemoteAuthenticationProvider implements AuthenticationProvider {
         String password = authentication.getCredentials().toString();
 
         try {
-            UserResponse user = restClient.post()
-                    .uri("http://user-service/api/users/authenticate")
-                    .body(new LoginRequest(email, password))
-                    .retrieve()
-                    .body(UserResponse.class);
+            UserResponse user = userClient.authenticate(email, password);
 
             if (user == null) {
                 throw new BadCredentialsException(

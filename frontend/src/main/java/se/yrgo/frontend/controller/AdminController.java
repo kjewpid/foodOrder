@@ -2,28 +2,25 @@
 package se.yrgo.frontend.controller;
 
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.cloud.client.loadbalancer.LoadBalanced;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestClient;
 import org.springframework.web.server.ResponseStatusException;
+import se.yrgo.frontend.client.UserClient;
 import se.yrgo.frontend.security.RemoteAuthenticationProvider;
 
-import java.util.List;
 import java.util.Map;
 
 @Controller
 @RequestMapping("/admin")
 public class AdminController {
 
-    private final RestClient restClient;
+    private final UserClient userClient;
 
-    public AdminController(@LoadBalanced RestClient.Builder builder) {
-        this.restClient = builder.build();
+    public AdminController(UserClient userClient) {
+        this.userClient = userClient;
     }
 
     @GetMapping("/users")
@@ -31,43 +28,21 @@ public class AdminController {
             Authentication authentication,
             Model model) {
 
-        Long adminId = ((RemoteAuthenticationProvider.UserResponse)
-                authentication.getPrincipal()).id();
-
-        List<Map<String, Object>> users = restClient.get()
-                .uri("http://user-service/api/users")
-                .retrieve()
-                .body(new ParameterizedTypeReference<>() {});
-
-        model.addAttribute("users", users);
-        model.addAttribute("adminId", adminId);
+        model.addAttribute("users", userClient.getAllUsers());
+        model.addAttribute("adminId", getAdminId(authentication));
 
         return "admin-users";
     }
+
     @GetMapping("/users/{id}")
     public String getUser(
-            Authentication authentication,
             @PathVariable Long id,
+            Authentication authentication,
             Model model) {
 
-        Long adminId = ((RemoteAuthenticationProvider.UserResponse)
-                authentication.getPrincipal()).id();
-
-        Map<String, Object> user = restClient.get()
-                .uri("http://user-service/api/users/{id}", id)
-                .retrieve()
-                .body(new ParameterizedTypeReference<>() {
-                });
-
-        List<Map<String, Object>> addresses = restClient.get()
-                .uri("http://user-service/api/users/{id}/addresses", id)
-                .retrieve()
-                .body(new ParameterizedTypeReference<>() {
-                });
-
-        model.addAttribute("adminId", adminId);
-        model.addAttribute("user", user);
-        model.addAttribute("addresses", addresses);
+        model.addAttribute("user", userClient.getUser(id));
+        model.addAttribute("addresses", userClient.getAddresses(id));
+        model.addAttribute("adminId", getAdminId(authentication));
 
         return "admin-user";
     }
@@ -86,11 +61,7 @@ public class AdminController {
                 "email", email
         );
 
-        restClient.put()
-                .uri("http://user-service/api/users/{id}", id)
-                .body(user)
-                .retrieve()
-                .toBodilessEntity();
+        userClient.updateUser(id, user);
 
         response.setStatus(303);
         response.setHeader("Location", "/admin/users/" + id);
@@ -102,8 +73,7 @@ public class AdminController {
             Authentication authentication,
             HttpServletResponse response) {
 
-        Long adminId = ((RemoteAuthenticationProvider.UserResponse)
-                authentication.getPrincipal()).id();
+        Long adminId = getAdminId(authentication);
 
         if (adminId.equals(id)) {
             throw new ResponseStatusException(
@@ -112,12 +82,14 @@ public class AdminController {
             );
         }
 
-        restClient.delete()
-                .uri("http://user-service/api/users/{id}", id)
-                .retrieve()
-                .toBodilessEntity();
+        userClient.deleteUser(id);
 
         response.setStatus(303);
         response.setHeader("Location", "/admin/users");
+    }
+
+    private Long getAdminId(Authentication authentication) {
+        return ((RemoteAuthenticationProvider.UserResponse)
+                authentication.getPrincipal()).id();
     }
 }
