@@ -2,20 +2,18 @@
 package se.yrgo.frontend.controller;
 
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestClient;
+import se.yrgo.frontend.client.UserClient;
 import se.yrgo.frontend.dto.RegisterForm;
 
 @Controller
 public class RegisterController {
 
-    private final RestClient restClient;
+    private final UserClient userClient;
 
-    public RegisterController(
-            @LoadBalanced RestClient.Builder builder) {
-        this.restClient = builder.build();
+    public RegisterController(UserClient userClient) {
+        this.userClient = userClient;
     }
 
     @GetMapping("/register")
@@ -29,11 +27,7 @@ public class RegisterController {
             HttpServletResponse response) {
 
         try {
-            restClient.post()
-                    .uri("http://user-service/api/users")
-                    .body(form)
-                    .retrieve()
-                    .toBodilessEntity();
+            userClient.createUser(form);
 
             response.setStatus(302);
             response.setHeader("Location", "/login?registered");

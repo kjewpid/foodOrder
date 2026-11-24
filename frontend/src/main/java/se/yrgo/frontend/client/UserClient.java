@@ -5,6 +5,7 @@ import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
+import se.yrgo.frontend.dto.RegisterForm;
 import se.yrgo.frontend.security.RemoteAuthenticationProvider;
 
 import java.util.List;
@@ -101,5 +102,13 @@ public class UserClient {
                 ))
                 .retrieve()
                 .body(RemoteAuthenticationProvider.UserResponse.class);
+    }
+
+    public void createUser(RegisterForm form) {
+        restClient.post()
+                .uri("/api/users")
+                .body(form)
+                .retrieve()
+                .toBodilessEntity();
     }
 }
