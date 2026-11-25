@@ -27,20 +27,8 @@ services:
     build:
       context: ./frontend
     container_name: foodorder-frontend
-    depends_on:
-      - eureka-server
-      - user-service
-
-  api-gateway:
-    build:
-      context: ./api-gateway
-    container_name: foodorder-api-gateway
-    depends_on:
-      - eureka-server
-      - frontend
-      - user-service
     ports:
-      - "80:80"
+      - "80:8080"
 
   activemq:
     image: apache/activemq-artemis:latest
