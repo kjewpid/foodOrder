@@ -2,12 +2,14 @@
 package se.yrgo.frontend.security;
 
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 import se.yrgo.frontend.client.UserClient;
+import se.yrgo.frontend.exception.UserServiceUnavailableException;
 
 import java.security.Principal;
 import java.util.List;
@@ -32,8 +34,7 @@ public class RemoteAuthenticationProvider implements AuthenticationProvider {
 
             if (user == null) {
                 throw new BadCredentialsException(
-                        "Felaktiga inloggningsuppgifter"
-                );
+                        "Felaktiga inloggningsuppgifter");
             }
 
             System.out.println("Inloggad användare, ID: " + user.id());
@@ -43,16 +44,22 @@ public class RemoteAuthenticationProvider implements AuthenticationProvider {
                     user,
                     null,
                     List.of(new SimpleGrantedAuthority(
-                            "ROLE_" + user.role()
-                    ))
+                            "ROLE_" + user.role()))
             );
 
-        } catch (BadCredentialsException e) {
-            throw e;
-        } catch (Exception e) {
+        } catch (UserServiceUnavailableException exception) {
+
+            throw new AuthenticationServiceException(
+                    "Användartjänsten är otillgänglig", exception);
+
+        } catch (BadCredentialsException exception) {
+
+            throw exception;
+
+        } catch (Exception exception) {
+
             throw new BadCredentialsException(
-                    "Felaktig e-post eller lösenord", e
-            );
+                    "Felaktig e-post eller lösenord", exception);
         }
     }
 

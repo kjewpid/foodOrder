@@ -3,6 +3,7 @@ package se.yrgo.frontend.config;
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.client.RestClient;
@@ -42,7 +43,11 @@ public class SecurityConfig {
                         })
                         .failureHandler((request, response, exception) -> {
                             response.setStatus(302);
-                            response.setHeader("Location", "/login?error");
+                            if (exception instanceof AuthenticationServiceException) {
+                                response.setHeader("Location", "/login?unavailable");
+                            } else {
+                                response.setHeader("Location", "/login?error");
+                            }
                         })
                         .permitAll()
                 )
