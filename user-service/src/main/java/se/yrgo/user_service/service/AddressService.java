@@ -7,6 +7,7 @@ import se.yrgo.user_service.dto.CreateAddressDto;
 import se.yrgo.user_service.entity.Address;
 import se.yrgo.user_service.entity.User;
 import se.yrgo.user_service.exception.UserWithIdNotFoundException;
+import se.yrgo.user_service.messaging.MessageProducer;
 import se.yrgo.user_service.repository.AddressRepository;
 import se.yrgo.user_service.repository.UserRepository;
 
@@ -17,11 +18,14 @@ public class AddressService {
 
     private final AddressRepository addressRepository;
     private final UserRepository userRepository;
+    private final MessageProducer messageProducer;
 
     public AddressService(AddressRepository addressRepository,
-                          UserRepository userRepository) {
+                          UserRepository userRepository,
+                          MessageProducer messageProducer) {
         this.addressRepository = addressRepository;
         this.userRepository = userRepository;
+        this.messageProducer = messageProducer;
     }
 
     public List<AddressDto> getAddressesByUserId(Long userId) {
@@ -45,6 +49,11 @@ public class AddressService {
 
         Address savedAddress = addressRepository.save(address);
 
+        messageProducer.sendMessage(
+                "address.created",
+                savedAddress.getId().toString()
+        );
+
         return convertToDto(savedAddress);
     }
 
@@ -62,11 +71,24 @@ public class AddressService {
 
         Address updatedAddress = addressRepository.save(oldAddress);
 
+        messageProducer.sendMessage(
+                "address.updated",
+                updatedAddress.getId().toString()
+        );
         return convertToDto(updatedAddress);
     }
 
     public void deleteAddress(Long id) {
+        if (!addressRepository.existsById(id)) {
+            throw new IllegalArgumentException("Address not found: " + id);
+        }
+        
         addressRepository.deleteById(id);
+
+        messageProducer.sendMessage(
+                "address.deleted",
+                id.toString()
+        );
     }
 
     private AddressDto convertToDto(Address address) {
