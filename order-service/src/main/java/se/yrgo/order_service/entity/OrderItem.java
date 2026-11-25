@@ -23,12 +23,10 @@ public class OrderItem {
     public OrderItem() {
     }
 
-    public OrderItem(Long productId, Integer quantity, BigDecimal price, Order order) {
-        
+    public OrderItem(Long productId, Integer quantity, BigDecimal price) {
         this.productId = productId;
         this.quantity = quantity;
         this.price = price;
-        this.order = order;
     }
 
     public Long getId() {

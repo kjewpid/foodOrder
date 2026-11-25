@@ -35,6 +35,10 @@ public class Order {
     }
 
     public void addOrderItem(OrderItem item) {
+        if (item == null) {
+            throw new IllegalArgumentException("OrderItem cannot be null");
+        }
+
         orderItems.add(item);
         item.setOrder(this);
     }
