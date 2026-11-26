@@ -1,6 +1,8 @@
 package se.yrgo.order_service.entity;
 
 import jakarta.persistence.*;
+import se.yrgo.order_service.enums.OrderStatus;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -14,7 +16,8 @@ public class Order {
 
     private Long userId;
 
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private OrderStatus status;
 
     private LocalDateTime orderDate;
 
@@ -27,7 +30,7 @@ public class Order {
     public Order() {
     }
 
-    public Order(Long userId, String status, LocalDateTime orderDate, BigDecimal totalPrice) {
+    public Order(Long userId, OrderStatus status, LocalDateTime orderDate, BigDecimal totalPrice) {
         this.userId = userId;
         this.status = status;
         this.orderDate = orderDate;
@@ -67,11 +70,11 @@ public class Order {
         this.orderDate = orderDate;
     }
 
-    public String getStatus() {
+    public OrderStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(OrderStatus status) {
         this.status = status;
     }
 

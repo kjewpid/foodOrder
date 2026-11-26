@@ -5,14 +5,15 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
-
 import org.springframework.transaction.annotation.Transactional;
+
 import se.yrgo.order_service.dto.CreateOrderDTO;
 import se.yrgo.order_service.dto.CreateOrderItemDTO;
 import se.yrgo.order_service.dto.OrderDTO;
 import se.yrgo.order_service.dto.OrderItemDTO;
 import se.yrgo.order_service.entity.Order;
 import se.yrgo.order_service.entity.OrderItem;
+import se.yrgo.order_service.enums.OrderStatus;
 import se.yrgo.order_service.exception.OrderWithIdNotFoundException;
 import se.yrgo.order_service.repository.OrderRepository;
 
@@ -26,14 +27,6 @@ public class OrderService {
     }
 
     @Transactional
-    public List<OrderDTO> getOrdersByUserId(Long userId) {
-        return orderRepository.findByUserId(userId)
-                .stream()
-                .map(this::convertToDto)
-                .toList();
-    }
-
-    @Transactional
     public OrderDTO createOrder(CreateOrderDTO dto) {
 
         if (dto.orderItems() == null || dto.orderItems().isEmpty()) {
@@ -42,7 +35,7 @@ public class OrderService {
 
         Order order = new Order(
                 dto.userId(),
-                "PENDING",
+                OrderStatus.PENDING,
                 LocalDateTime.now(),
                 BigDecimal.ZERO);// Should be changed with Product Service
 
@@ -74,6 +67,32 @@ public class OrderService {
     }
 
     @Transactional
+    public OrderDTO updateOrderStatus(Long id, OrderStatus newStatus) {
+        if (newStatus == null) {
+            throw new IllegalArgumentException("New status cannot be null");
+        }
+
+        Order order = orderRepository.findById(id)
+                .orElseThrow(() -> new OrderWithIdNotFoundException(id));
+
+        if (!isValidStatusChange(order.getStatus(), newStatus)) {
+            throw new IllegalArgumentException("Invalid status change");
+        }
+
+        order.setStatus(newStatus);
+
+        return convertToDto(order);
+    }
+
+    @Transactional(readOnly = true)
+    public List<OrderDTO> getOrdersByUserId(Long userId) {
+        return orderRepository.findByUserId(userId)
+                .stream()
+                .map(this::convertToDto)
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
     public OrderDTO getOrderById(Long id) {
 
         Order order = orderRepository.findById(id)
@@ -82,13 +101,15 @@ public class OrderService {
         return convertToDto(order);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public List<OrderDTO> getAllOrders() {
         return orderRepository.findAll()
                 .stream()
                 .map(this::convertToDto)
                 .toList();
     }
+
+    // Convert to DTO:s
 
     private OrderDTO convertToDto(Order order) {
         List<OrderItemDTO> items = order.getOrderItems()
@@ -111,5 +132,25 @@ public class OrderService {
                 item.getProductId(),
                 item.getQuantity(),
                 item.getPrice());
+    }
+
+    // Help methods
+
+    private boolean isValidStatusChange(OrderStatus current, OrderStatus next) {
+
+        return switch (current) {
+            case PENDING ->
+                next == OrderStatus.CONFIRMED ||
+                        next == OrderStatus.CANCELLED;
+
+            case CONFIRMED ->
+                next == OrderStatus.SHIPPED ||
+                        next == OrderStatus.CANCELLED;
+
+            case SHIPPED ->
+                next == OrderStatus.DELIVERED;
+
+            case DELIVERED, CANCELLED -> false;
+        };
     }
 }
