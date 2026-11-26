@@ -10,6 +10,11 @@
 <h1>Välkommen till FoodOrder!</h1>
 <h2>Logga in</h2>
 
+<p th:if="${param.unavailable}">
+    Inloggning är tillfälligt otillgänglig.
+    Försök igen senare.
+</p>
+
 <p th:if="${param.error}">
     Fel e-post eller lösenord.
 </p>

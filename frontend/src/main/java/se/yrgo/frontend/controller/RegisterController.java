@@ -6,6 +6,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import se.yrgo.frontend.client.UserClient;
 import se.yrgo.frontend.dto.RegisterForm;
+import se.yrgo.frontend.exception.UserServiceUnavailableException;
 
 @Controller
 public class RegisterController {
@@ -32,9 +33,10 @@ public class RegisterController {
             response.setStatus(302);
             response.setHeader("Location", "/login?registered");
 
+        } catch (UserServiceUnavailableException exception) {
+            throw exception;
         } catch (Exception exception) {
             exception.printStackTrace();
-
             response.setStatus(302);
             response.setHeader("Location", "/register?error");
         }

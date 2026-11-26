@@ -6,7 +6,7 @@ docker compose down --remove-orphans
 
 echo "Bygger om alla Java-tjänster..."
 
-for service in discovery-server api-gateway frontend user-service; do
+for service in discovery-server frontend user-service; do
     echo "Bygger $service..."
 
     (
@@ -53,13 +53,6 @@ if [ "$ready" = false ]; then
 fi
 
 echo "Tjänsterna är registrerade"
-
-echo "Startar om API Gateway..."
-docker compose restart api-gateway
-
-echo "Väntar på API Gateway..."
-sleep 5
-
 echo "FoodOrder är startat!"
 echo "Webbplats: http://localhost"
 echo "Eureka: http://localhost:8010"

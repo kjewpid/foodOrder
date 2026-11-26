@@ -7,7 +7,32 @@ import org.springframework.stereotype.Component;
 public class MessageConsumer {
 
     @JmsListener(destination = "user.registered")
-    public void receiveMessage(String message) {
-        System.out.println("Mottaget meddelande: " + message);
+    public void handleUserRegistered(String message) {
+        System.out.println("User registered: " + message);
+    }
+
+    @JmsListener(destination = "user.updated")
+    public void handleUserUpdated(String message) {
+        System.out.println("User updated: " + message);
+    }
+
+    @JmsListener(destination = "user.deleted")
+    public void handleUserDeleted(String message) {
+        System.out.println("User deleted: " + message);
+    }
+
+    @JmsListener(destination = "address.created")
+    public void handleAddressCreated(String message) {
+        System.out.println("Address created: " + message);
+    }
+
+    @JmsListener(destination = "address.updated")
+    public void handleAddressUpdated(String message) {
+        System.out.println("Address updated: " + message);
+    }
+
+    @JmsListener(destination = "address.deleted")
+    public void handleAddressDeleted(String message) {
+        System.out.println("Address deleted: " + message);
     }
 }

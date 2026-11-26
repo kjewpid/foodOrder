@@ -57,8 +57,10 @@ public class UserService {
 
         User savedUser = userRepository.save(user);
 
-        messageProducer.sendMessage("User registered: " + savedUser.getId());
-
+        messageProducer.sendMessage(
+                "user.registered",
+                savedUser.getId().toString()
+        );
         return savedUser;
     }
 
@@ -80,10 +82,21 @@ public class UserService {
             oldUser.setEmail(user.getEmail());
         }
 
-        return userRepository.save(oldUser);
+        User updatedUser = userRepository.save(oldUser);
+
+        messageProducer.sendMessage(
+                "user.updated",
+                updatedUser.getId().toString()
+        );
+        return updatedUser;
     }
 
     public void deleteUser(Long id) {
         userRepository.deleteById(id);
+
+        messageProducer.sendMessage(
+                "user.deleted",
+                id.toString()
+        );
     }
 }

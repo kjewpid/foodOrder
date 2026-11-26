@@ -12,7 +12,7 @@ public class MessageProducer {
         this.jmsTemplate = jmsTemplate;
     }
 
-    public void sendMessage(String message) {
-        jmsTemplate.convertAndSend("user.registered", message);
+    public void sendMessage(String destination, String message) {
+        jmsTemplate.convertAndSend(destination, message);
     }
 }
